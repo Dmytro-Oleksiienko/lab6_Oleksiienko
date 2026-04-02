@@ -18,16 +18,16 @@ stages:
   - job: Build
     displayName: Build Job
     steps:
-    # 1. Компіляція коду прямо всередині пайплайну
-    - task: Maven@4
-      displayName: 'Maven Package'
-      inputs:
-        mavenPomFile: 'complete/pom.xml'
-        goals: 'package -DskipTests'
-        options: '-Dmkdir target/dependency && (cd target/dependency; jar -xf ../*.jar)'
-        publishJumpTestResults: false
+    - checkout: self
 
-    # 2. Збірка Docker-образу (тепер target/ точно буде на місці)
+    - script: |
+        cd complete
+        chmod +x mvnw
+        ./mvnw package -DskipTests
+        mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+      displayName: 'Maven Package via Wrapper'
+
+
     - task: Docker@2
       displayName: "Build Image for AMD64"
       inputs:
@@ -39,7 +39,6 @@ stages:
         tags: |
           $(tag)
 
-    # 3. Пуш в Azure ACR
     - task: Docker@2
       displayName: "Push Image to ACR"
       inputs:
