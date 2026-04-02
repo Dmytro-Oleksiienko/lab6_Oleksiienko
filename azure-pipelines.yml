@@ -9,14 +9,14 @@ resources:
 - repo: self
 
 variables:
-  # Container registry service connection established during pipeline creation
+  # Назва підключення, яку згенерував Azure (не змінюйте її)
   dockerRegistryServiceConnection: 'ea119ec4-be0c-4fb7-81ff-fc61bdd0dbe6'
-  imageRepository: 'dmytrooleksiienkolaboleksiienko'
-  containerRegistry: 'dmytrooleksiienko.azurecr.io'
+  imageRepository: 'dmytrooleksiienkolab6oleksiienko'
+  containerRegistry: 'dmytroleksiienko.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/complete/Dockerfile'
   tag: '$(Build.BuildId)'
 
-  # Agent VM image name
+# Використовуємо ваш локальний Mac (pool Default)
 pool:
   name: 'Default'
 
@@ -25,15 +25,24 @@ stages:
   displayName: Build and push stage
   jobs:
   - job: Build
-    displayName: Build
+    displayName: Build Job
     steps:
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: "Build Image for AMD64"
       inputs:
-        command: buildAndPush
-        arguments: '--platform linux/amd64'
+        command: build
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        arguments: '--platform linux/amd64'
+        tags: |
+          $(tag)
+
+    - task: Docker@2
+      displayName: "Push Image to ACR"
+      inputs:
+        command: push
+        repository: $(imageRepository)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
