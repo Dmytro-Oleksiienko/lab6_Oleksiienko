@@ -2,15 +2,12 @@ trigger:
 - main
 
 pool:
-  name: 'Default'  # Використовуємо твій локальний агент на Mac M3
+  name: 'Default'
 
 variables:
-  # Твої реальні назви з попередніх кроків
   dockerRegistryServiceConnection: 'dmytroleksiienko-acr'
   imageRepository: 'dmytrooleksiienkolab6oleksiienko'
   containerRegistry: 'dmytroleksiienko.azurecr.io'
-  
-  # Шлях до твого Dockerfile у папці complete
   dockerfilePath: '$(Build.SourcesDirectory)/complete/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -23,8 +20,6 @@ stages:
     steps:
     - checkout: self
 
-    # 1. Готуємо проєкт: компілюємо та розпаковуємо JAR
-    # Це необхідно для твого Dockerfile, який шукає target/dependency
     - script: |
         cd complete
         chmod +x mvnw
@@ -34,7 +29,6 @@ stages:
         jar -xf ../*.jar
       displayName: 'Maven Package and Unpack'
 
-    # 2. Збірка образу з архітектурою linux/amd64 (важливо для Mac M3)
     - task: Docker@2
       displayName: "Build Image"
       inputs:
@@ -47,7 +41,6 @@ stages:
         tags: |
           $(tag)
 
-    # 3. Завантаження образу в Azure Container Registry
     - task: Docker@2
       displayName: "Push Image to ACR"
       inputs:
