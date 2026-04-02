@@ -8,36 +8,27 @@ variables:
   dockerRegistryServiceConnection: 'ea119ec4-be0c-4fb7-81ff-fc61bdd0dbe6'
   imageRepository: 'dmytrooleksiienkolab6oleksiienko'
   containerRegistry: 'dmytroleksiienko.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/complete/Dockerfile'
   tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build
-  displayName: Build and push stage
   jobs:
   - job: Build
-    displayName: Build Job
     steps:
-    - task: Maven@3
-      displayName: 'Maven Package'
-      inputs:
-        mavenPomFile: 'complete/pom.xml'
-        goals: 'package -DskipTests'
-        publishJumpTestResults: false
-
     - task: Docker@2
-      displayName: "Build Image for AMD64"
+      displayName: "Build Image"
       inputs:
         command: build
         repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
+        # Використовуємо файл з папки initial, він зазвичай автономний
+        dockerfile: 'initial/Dockerfile' 
         containerRegistry: $(dockerRegistryServiceConnection)
         arguments: '--platform linux/amd64'
         tags: |
           $(tag)
 
     - task: Docker@2
-      displayName: "Push Image to ACR"
+      displayName: "Push Image"
       inputs:
         command: push
         repository: $(imageRepository)
