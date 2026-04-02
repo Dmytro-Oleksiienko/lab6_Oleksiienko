@@ -1,6 +1,5 @@
-FROM eclipse-temurin:17
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
+FROM eclipse-temurin:17-jre
+VOLUME /tmp
 ARG DEPENDENCY=target/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
