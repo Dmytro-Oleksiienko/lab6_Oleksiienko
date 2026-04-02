@@ -1,8 +1,11 @@
 trigger:
 - main
 
+pool:
+  name: 'Default'
+
 variables:
-  dockerRegistryServiceConnection: 'ea119ec4-be0c-4fb7-81ff-fc61bdd0dbe6'
+  dockerRegistryServiceConnection: 'dmytroleksiienko-acr'
   imageRepository: 'dmytrooleksiienkolab6oleksiienko'
   containerRegistry: 'dmytroleksiienko.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/complete/Dockerfile'
@@ -13,12 +16,10 @@ stages:
   displayName: Build and push stage
   jobs:
   - job: Build
-    displayName: Build
-    pool:
-      name: 'Default'
+    displayName: Build Job
     steps:
     - task: Docker@2
-      displayName: Build image for AMD64
+      displayName: "Build Image for AMD64"
       inputs:
         command: build
         repository: $(imageRepository)
@@ -29,7 +30,7 @@ stages:
           $(tag)
 
     - task: Docker@2
-      displayName: Push image to ACR
+      displayName: "Push Image to ACR"
       inputs:
         command: push
         repository: $(imageRepository)
