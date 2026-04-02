@@ -9,14 +9,12 @@ resources:
 - repo: self
 
 variables:
-  # Назва підключення, яку згенерував Azure (не змінюйте її)
   dockerRegistryServiceConnection: 'ea119ec4-be0c-4fb7-81ff-fc61bdd0dbe6'
   imageRepository: 'dmytrooleksiienkolab6oleksiienko'
   containerRegistry: 'dmytroleksiienko.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/complete/Dockerfile'
+  dockerfilePath: '$(Build.SourcesDirectory)/initial/Dockerfile'
   tag: '$(Build.BuildId)'
 
-# Використовуємо ваш локальний Mac (pool Default)
 pool:
   name: 'Default'
 
