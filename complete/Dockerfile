@@ -1,9 +1,5 @@
 FROM eclipse-temurin:17-jre-alpine
 VOLUME /tmp
-# Копіюємо весь вміст розпакованого JAR-файлу
-ARG DEPENDENCY=target/dependency
-COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY ${DEPENDENCY}/META-INF /app/META-INF
-COPY ${DEPENDENCY}/BOOT-INF/classes /app
 
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.springbootdocker.SpringBootDockerApplication"]
+COPY complete/target/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
