@@ -20,14 +20,19 @@ stages:
     steps:
     - checkout: self
 
-
+    # 1. Збірка проєкту та підготовка структури target/dependency
     - script: |
         cd complete
         chmod +x mvnw
         ./mvnw package -DskipTests
-      displayName: 'Maven Package (Generate JAR)'
+        # Створюємо папку, яку шукає твій Dockerfile (ARG DEPENDENCY=target/dependency)
+        mkdir -p target/dependency
+        # Розпаковуємо JAR-файл у цю папку
+        cd target/dependency
+        jar -xf ../*.jar
+      displayName: 'Maven Package and Unpack'
 
-
+    # 2. Збірка Docker-образу (під архітектуру x86_64 для Azure)
     - task: Docker@2
       displayName: "Build Docker Image"
       inputs:
@@ -35,11 +40,12 @@ stages:
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        buildContext: '$(Build.SourcesDirectory)/complete'
         arguments: '--platform linux/amd64'
         tags: |
           $(tag)
 
-
+    # 3. Пуш образу в ACR
     - task: Docker@2
       displayName: "Push Image to ACR"
       inputs:
